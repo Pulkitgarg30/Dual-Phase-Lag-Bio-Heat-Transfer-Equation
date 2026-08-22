@@ -60,15 +60,15 @@ Two heat sources are studied to probe the behavior of the four PINN variants:
 
 **(a) Sharp Gaussian source (primary case — hyperthermia model):**
 
-$$P_r(x) = P_{r0} \exp\left(-a(x - x^*)^2\right), \quad a = 200, \quad x^* = 0.5$$
+$$P_r(x) = P_{r0}\, \exp\left(-a(x - x^{*})^2\right), \quad a = 200, \quad x^{*} = 0.5$$
 
-Models a localized tumor heating region. Sharp derivative: $\|\partial P_r/\partial x\|_\infty \approx 12.13$.
+Models a localized tumor heating region. Sharp derivative: $\lVert \partial P_r/\partial x \rVert_{\infty} \approx 12.13$.
 
 **(b) Smooth polynomial source (validation case):**
 
 $$P_r(x) = P_{r0}\, x(1-x), \quad P_{r0} = 1$$
 
-Smooth, bounded derivative: $\|\partial P_r/\partial x\|_\infty = 1$.
+Smooth, bounded derivative: $\lVert \partial P_r/\partial x \rVert_{\infty} = 1$.
 
 The two profiles differ by a **12× factor in derivative magnitude** — equivalently, ~147× in the squared quantity that enters the gradient-residual loss of gPINN and SA-gPINN. This contrast is central to the mechanistic findings of this study.
 
@@ -96,21 +96,21 @@ This ansatz **hard-codes both initial conditions exactly** — regardless of the
 
 ### 1. Standard PINN
 Baseline framework with unweighted composite loss:
-$$\mathcal{L}_{PINN} = \mathcal{L}_r + \mathcal{L}_{BC}$$
+$$\mathcal{L}_{\text{PINN}} = \mathcal{L}_r + \mathcal{L}_{BC}$$
 
 ### 2. SA-PINN (Self-Adaptive PINN)
 Introduces learnable adversarial weights that dynamically rebalance loss terms:
-$$\mathcal{L}_{SA-PINN} = \lambda_r \mathcal{L}_r + \lambda_{BC} \mathcal{L}_{BC}$$
+$$\mathcal{L}_{\text{SA-PINN}} = \lambda_r \mathcal{L}_r + \lambda_{BC} \mathcal{L}_{BC}$$
 Weights are trained by adversarial ascent while the network minimizes.
 
 ### 3. gPINN (Gradient-Enhanced PINN)
 Adds a gradient-residual loss enforcing $\partial R/\partial x \equiv 0$ and $\partial R/\partial Fo \equiv 0$:
-$$\mathcal{L}_{gPINN} = \mathcal{L}_r + \mathcal{L}_{BC} + w_g \mathcal{L}_g$$
+$$\mathcal{L}_{\text{gPINN}} = \mathcal{L}_r + \mathcal{L}_{BC} + w_g \mathcal{L}_g$$
 Requires third-order automatic differentiation.
 
 ### 4. SA-gPINN (Proposed — Novel Contribution) ⭐
 Combines self-adaptive weighting with gradient enhancement:
-$$\mathcal{L}_{SA-gPINN} = \lambda_r \mathcal{L}_r + \lambda_{BC} \mathcal{L}_{BC} + \lambda_g \mathcal{L}_g$$
+$$\mathcal{L}_{\text{SA-gPINN}} = \lambda_r \mathcal{L}_r + \lambda_{BC} \mathcal{L}_{BC} + \lambda_g \mathcal{L}_g$$
 Three-weight adversarial saddle-point optimization. Predicted to excel when the source is smooth enough that $\mathcal{L}_g$ carries genuine physics rather than source-derivative noise.
 
 ---
@@ -178,7 +178,7 @@ This is the **primary hyperthermia scenario** with sharp Gaussian source ($a = 2
 
 ### 🏆 Finding on Gaussian Source
 
-**SA-PINN wins on all three metrics** (PDE residual, both BC residuals). The gradient-enhanced methods (gPINN, SA-gPINN) show a **~4× BC-residual penalty** driven by source-derivative corruption of $\mathcal{L}_g$: the sharp Gaussian generates a large $\|\partial P_r/\partial x\|_\infty \approx 12.13$ that dominates the gradient loss and starves $\lambda_{BC}$ of gradient budget.
+**SA-PINN wins on all three metrics** (PDE residual, both BC residuals). The gradient-enhanced methods (gPINN, SA-gPINN) show a **~4× BC-residual penalty** driven by source-derivative corruption of $\mathcal{L}_g$: the sharp Gaussian generates a large $\lVert \partial P_r/\partial x \rVert_{\infty} \approx 12.13$ that dominates the gradient loss and starves $\lambda_{BC}$ of gradient budget.
 
 ---
 
